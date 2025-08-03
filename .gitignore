@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+.npm/
+.nvm/
+
+# Frontend build outputs
+dist/
+.angular/
+aiprojects/dist/
+aiprojects/.angular/
+
+# Backend build outputs
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Test results
+test-results/
+playwright-report/
+coverage/
+*.log
+
+# IDE
+.idea/
+*.iml
+.vscode-server/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+*.pid
+
+# User-specific files
+.bash_history
+.bashrc
+.bash_logout
+.profile
+.sudo_as_admin_successful
+.cache/
+.config/
+.local/
+.m2/
+.pki/
+.landscape/
+.motd_shown
+.node_repl_history
+
+# Temporary files
+*.tmp
+*.temp
+simple-test.html
+test-*.html
+manual-test.js
+
+# Claude-specific
+.claude/
+.claude.json
+.claude.json.backup

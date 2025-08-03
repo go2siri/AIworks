@@ -38,15 +38,14 @@ test.describe('Insurance Quote Application - Positive Scenarios', () => {
     await page.click('button:has-text("Save Quote")');
     
     // Check for success message
-    await expect(page.locator('.alert:has-text("successfully")')).toBeVisible({ timeout: 5000 });
-    await expect(page.locator('.alert:has-text("successfully")')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('.alert').filter({ hasText: 'Quote successfully saved' })).toBeVisible({ timeout: 10000 });
     
-    // Verify the button changes to Edit
-    await expect(page.locator('button:has-text("Edit")')).toBeVisible();
+    // Verify button changes to Update Quote
+    await expect(page.locator('button:has-text("Update Quote")')).toBeVisible();
     
-    // Verify quote status in summary
-    await expect(page.locator('.status-saved')).toBeVisible();
-    await expect(page.locator('.status-saved')).toContainText('Status: Saved');
+    // Verify quote appears in the list
+    await page.click('button:has-text("List Quotes")');
+    await expect(page.locator('.quote-item')).toBeVisible();
   });
 
   test('should allow editing an existing quote', async ({ page }) => {

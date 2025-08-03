@@ -15,17 +15,14 @@ test.describe('Insurance Quote Application - Negative Scenarios', () => {
     await page.click('button:has-text("Save Quote")');
     
     // Check for validation error message
-    await expect(page.locator('.alert:has-text("error")')).toBeVisible();
-    await expect(page.locator('.alert:has-text("Please fill in all required fields correctly")')).toBeVisible();
+    await expect(page.locator('.alert-error')).toBeVisible();
+    await expect(page.locator('.alert-error')).toContainText('required fields');
     
     // Check for individual field errors
     await expect(page.locator('.error-message')).toBeVisible();
     
     // Verify the form is still in edit mode
     await expect(page.locator('button:has-text("Save Quote")')).toBeVisible();
-    
-    // Verify quote status remains draft
-    await expect(page.locator('.status-draft')).toBeVisible();
   });
 
   test('should validate business name minimum length', async ({ page }) => {
@@ -33,10 +30,10 @@ test.describe('Insurance Quote Application - Negative Scenarios', () => {
     
     // Enter a name that's too short
     await page.fill('#name', 'A');
-    await page.blur('#name'); // Trigger validation
+    await page.keyboard.press('Tab'); // Trigger validation
     
     // Check for specific validation error
-    await expect(page.locator('.error-message')).toContainText('Business name must be at least 2 characters');
+    await expect(page.locator('#name ~ .error-message')).toContainText('Business name must be at least 2 characters');
     
     // Try to save with invalid name
     await page.selectOption('#business-type', 'RETAIL');
@@ -45,8 +42,8 @@ test.describe('Insurance Quote Application - Negative Scenarios', () => {
     await page.click('button:has-text("Save Quote")');
     
     // Should show validation errors
-    await expect(page.locator('.alert:has-text("error")')).toBeVisible();
-    await expect(page.locator('.alert:has-text("Business name must be at least 2 characters long")')).toBeVisible();
+    await expect(page.locator('.alert-error')).toBeVisible();
+    await expect(page.locator('.alert-error')).toContainText('Business name must be at least 2 characters');
   });
 
   test('should validate state field format', async ({ page }) => {

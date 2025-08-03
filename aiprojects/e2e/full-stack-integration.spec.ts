@@ -32,11 +32,11 @@ test.describe('Full Stack Integration Tests', () => {
     await page.click('button:has-text("Save Quote")');
     
     // Wait for success message
-    await expect(page.locator('.alert:has-text("successfully")')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('.alert:has-text("Quote saved successfully")')).toBeVisible();
+    await expect(page.locator('.alert').filter({ hasText: 'Quote successfully saved' })).toBeVisible({ timeout: 10000 });
     
-    // Verify quote is in saved state
-    await expect(page.locator('.status-saved')).toBeVisible();
+    // Verify quote appears in list
+    await page.click('button:has-text("List Quotes")');
+    await expect(page.locator('.quote-item')).toBeVisible();
     
     // Verify backend has the quote by checking API directly
     const response = await page.request.get('http://localhost:8080/api/quotes');
