@@ -1,0 +1,47 @@
+# Page snapshot
+
+```yaml
+- heading "Insurance Quote Application" [level=1]
+- heading "Business Information" [level=2]
+- text: Name *
+- textbox "Name *"
+- text: Business Type *
+- combobox "Business Type *":
+  - option "Select business type"
+  - option "Retail" [selected]
+  - option "Restaurant"
+  - option "Technology"
+  - option "Manufacturing"
+  - option "Healthcare"
+  - option "Professional Services"
+- text: Industry *
+- combobox "Industry *":
+  - option "Select industry"
+  - option "Food Service"
+  - option "Retail Trade" [selected]
+  - option "Software Development"
+  - option "Healthcare Services"
+  - option "Consulting"
+  - option "Manufacturing"
+- text: State *
+- textbox "State *"
+- heading "Coverage Configurator" [level=2]
+- paragraph: Expandable coverage options
+- text: › General Liability
+- checkbox "$500"
+- text: $500 › Property
+- checkbox "$750"
+- text: $750 › Additional Coverage Options
+- checkbox "$300"
+- text: $300
+- heading "Quote Summary" [level=2]
+- text: "TOTAL PREMIUM $0 Status: Draft"
+- paragraph: No coverages selected. Choose coverage options to see your premium.
+- heading "Risk Rating Snapshot" [level=2]
+- heading "Underwriter Notes" [level=2]
+- textbox "Enter underwriter notes, comments, and any additional information about this quote..."
+- heading "Quote Actions" [level=2]
+- button "Save Quote"
+- button "New Quote"
+- button "List Quotes"
+```
