@@ -97,14 +97,14 @@ mkdir -p logs
 
 # Start Backend
 echo -e "${BLUE}🚀 Starting Spring Boot Backend (Port 8080)...${NC}"
-cd insurance-quote-backend
+cd ../insurance-quote-backend
 
 # Build the application first
 echo -e "${YELLOW}🔨 Building backend application...${NC}"
 if command -v mvn &> /dev/null; then
-    mvn clean package -DskipTests > ../logs/backend-build.log 2>&1
+    mvn clean package -DskipTests > ../aiprojects/logs/backend-build.log 2>&1
 else
-    ./mvnw clean package -DskipTests > ../logs/backend-build.log 2>&1
+    ./mvnw clean package -DskipTests > ../aiprojects/logs/backend-build.log 2>&1
 fi
 
 if [ $? -eq 0 ]; then
@@ -117,16 +117,16 @@ fi
 # Start the backend application
 echo -e "${YELLOW}🚀 Starting backend server...${NC}"
 if command -v mvn &> /dev/null; then
-    nohup mvn spring-boot:run > ../logs/backend.log 2>&1 &
+    nohup mvn spring-boot:run > ../aiprojects/logs/backend.log 2>&1 &
 else
-    nohup ./mvnw spring-boot:run > ../logs/backend.log 2>&1 &
+    nohup ./mvnw spring-boot:run > ../aiprojects/logs/backend.log 2>&1 &
 fi
 
 BACKEND_PID=$!
-echo $BACKEND_PID > ../logs/backend.pid
+echo $BACKEND_PID > ../aiprojects/logs/backend.pid
 echo -e "${GREEN}✅ Backend started with PID: $BACKEND_PID${NC}"
 
-cd ..
+cd ../aiprojects
 
 # Wait for backend to be ready
 wait_for_service "http://localhost:8080/api/actuator/health" "Backend API"
@@ -139,12 +139,11 @@ fi
 
 # Start Frontend
 echo -e "${BLUE}🚀 Starting Angular Frontend (Port 4201)...${NC}"
-cd aiprojects
 
 # Install dependencies if node_modules doesn't exist
 if [ ! -d "node_modules" ]; then
     echo -e "${YELLOW}📦 Installing frontend dependencies...${NC}"
-    npm install > ../logs/frontend-install.log 2>&1
+    npm install > logs/frontend-install.log 2>&1
     if [ $? -ne 0 ]; then
         echo -e "${RED}❌ Frontend dependency installation failed. Check logs/frontend-install.log${NC}"
         kill $BACKEND_PID 2>/dev/null
@@ -153,9 +152,9 @@ if [ ! -d "node_modules" ]; then
 fi
 
 echo -e "${YELLOW}🚀 Starting frontend server...${NC}"
-nohup npm run start -- --port 4201 > ../logs/frontend.log 2>&1 &
+nohup npm run start -- --port 4201 > logs/frontend.log 2>&1 &
 FRONTEND_PID=$!
-echo $FRONTEND_PID > ../logs/frontend.pid
+echo $FRONTEND_PID > logs/frontend.pid
 echo -e "${GREEN}✅ Frontend started with PID: $FRONTEND_PID${NC}"
 
 cd ..
