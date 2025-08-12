@@ -1,0 +1,13 @@
+<div class="underwriter-notes-section">
+  <h2 class="section-title">Underwriter Notes</h2>
+  <div class="notes-content">
+    <textarea 
+      id="underwriter-notes"
+      class="notes-textarea"
+      [(ngModel)]="notes"
+      (ngModelChange)="onNotesChange($event)"
+      placeholder="Enter underwriter notes, comments, and any additional information about this quote..."
+      rows="6">
+    </textarea>
+  </div>
+</div>

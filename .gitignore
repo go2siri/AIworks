@@ -1,13 +1,23 @@
+# See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+
 # Dependencies
 node_modules/
 .npm/
 .nvm/
+npm-debug.log
+yarn-error.log
 
 # Frontend build outputs
 dist/
+/dist
+/tmp
+/out-tsc
+/bazel-out
 .angular/
+/.angular/cache
 aiprojects/dist/
 aiprojects/.angular/
+.sass-cache/
 
 # Backend build outputs
 target/
@@ -15,17 +25,36 @@ target/
 *.jar
 *.war
 *.ear
+insurance-quote-backend/target/
+insurance-quote-backend/logs/
+insurance-quote-backend/*.log
+insurance-quote-backend/*.jar
 
 # Test results
 test-results/
 playwright-report/
 coverage/
-*.log
+/coverage
+testem.log
+/typings
+/libpeerconnection.log
 
 # IDE
 .idea/
 *.iml
 .vscode-server/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
 *.swp
 *.swo
 *~
@@ -65,8 +94,12 @@ logs/
 simple-test.html
 test-*.html
 manual-test.js
+/connect.lock
 
 # Claude-specific
 .claude/
 .claude.json
 .claude.json.backup
+
+# Other
+openjdk-21.0.2_linux-x64_bin.tar.gz

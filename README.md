@@ -48,7 +48,7 @@ mvn spring-boot:run
 
 #### Frontend
 ```bash
-cd aiprojects
+# In repository root
 npm install
 npm start -- --port 4201
 ```
@@ -63,37 +63,52 @@ npm start -- --port 4201
 | API Documentation | http://localhost:8080/api/swagger-ui/index.html | Swagger UI |
 | Health Check | http://localhost:8080/api/actuator/health | Application health |
 
-## 💾 Database Configuration
-
-### H2 Database Details
-- **URL**: `jdbc:h2:mem:insurance_quote_db`
-- **Username**: `sa`
-- **Password**: `password`
-- **Console**: Available at http://localhost:8080/api/h2-console
-
-## 🔧 API Endpoints
-
-### Quote Management
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/quotes` | Create new quote |
-| PUT | `/api/quotes/{id}` | Update existing quote |
-| GET | `/api/quotes/{id}` | Get quote by ID |
-| GET | `/api/quotes` | Get all quotes (paginated) |
-| DELETE | `/api/quotes/{id}` | Delete quote |
-| POST | `/api/quotes/{id}/submit` | Submit quote for approval |
-| POST | `/api/quotes/{id}/approve` | Approve quote |
-| POST | `/api/quotes/{id}/reject` | Reject quote |
-| GET | `/api/quotes/statistics` | Get quote statistics |
-
-### Search and Filter
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/quotes/search?businessName={name}` | Search by business name |
-| GET | `/api/quotes/status/{status}` | Filter by status |
-| GET | `/api/quotes/state/{state}` | Filter by state |
+## 🛠️ Project Structure
+```
+AIworks/                          # Repository Root (Angular Frontend)
+├── src/app/                      # Angular Application
+│   ├── business-information/     # Business info component
+│   ├── coverage-configurator/    # Coverage selection component
+│   ├── quote-summary/            # Quote summary component
+│   ├── services/                 # API services
+│   ├── models/                   # TypeScript interfaces
+│   └── ...
+├── e2e/                          # Playwright E2E tests
+│   ├── positive-scenarios.spec.ts
+│   ├── negative-scenarios.spec.ts
+│   ├── edge-cases.spec.ts
+│   └── full-stack-integration.spec.ts
+├── insurance-quote-backend/      # Spring Boot Backend
+│   ├── src/main/java/
+│   │   ├── entity/               # JPA entities
+│   │   ├── repository/           # Data repositories
+│   │   ├── service/              # Business logic
+│   │   ├── controller/           # REST controllers
+│   │   └── ...
+│   └── src/test/java/            # JUnit tests
+├── angular.json                  # Angular configuration
+├── package.json                  # NPM dependencies
+├── PROJECT_LEARNINGS.md          # Comprehensive project documentation
+├── start-full-application.sh     # Startup script
+└── stop-application.sh           # Shutdown script
+```
 
 ## 🧪 Testing
+
+### Frontend E2E Tests
+```bash
+# Run all E2E tests
+npm run test:e2e
+
+# Run tests with UI for debugging
+npm run test:e2e:ui
+
+# Run specific test categories
+npx playwright test positive-scenarios.spec.ts
+npx playwright test negative-scenarios.spec.ts
+npx playwright test edge-cases.spec.ts
+npx playwright test full-stack-integration.spec.ts
+```
 
 ### Backend Tests
 ```bash
@@ -101,28 +116,13 @@ cd insurance-quote-backend
 mvn test
 ```
 
-### Frontend E2E Tests
-```bash
-cd aiprojects
-npm run test:e2e
-```
-
-### Integration Tests
-```bash
-# Start the full application first
-./start-full-application.sh
-
-# Run integration tests
-cd aiprojects
-npx playwright test full-stack-integration.spec.ts
-```
-
 ### Test Coverage
 The application includes comprehensive test coverage:
 - **Positive Scenarios**: Valid operations and data flows
 - **Negative Scenarios**: Error handling and validation
+- **Edge Cases**: Boundary conditions and unusual behaviors
 - **Integration Tests**: Full-stack functionality
-- **Edge Cases**: Boundary conditions and error states
+- **Multi-Browser Testing**: Chrome, Firefox, Safari compatibility
 
 ## 📊 Features
 
@@ -197,70 +197,6 @@ DRAFT → SAVED → SUBMITTED → APPROVED/REJECTED
 - **REJECTED**: Final rejected state
 - **EXPIRED**: Quote has expired
 
-## 🔍 Logging and Debugging
-
-### Log Files
-- **Backend**: `logs/backend.log`
-- **Frontend**: `logs/frontend.log`
-- **Structured JSON**: `logs/backend-json.log`
-
-### Log Levels
-- **Development**: DEBUG level with SQL logging
-- **Production**: INFO level with structured JSON
-- **Test**: DEBUG level console only
-
-### Debugging Tips
-```bash
-# View real-time backend logs
-tail -f logs/backend.log
-
-# View real-time frontend logs
-tail -f logs/frontend.log
-
-# Check application health
-curl http://localhost:8080/api/actuator/health
-
-# View H2 database console
-open http://localhost:8080/api/h2-console
-```
-
-## 🛠️ Development
-
-### Project Structure
-```
-insurance-quote/
-├── aiprojects/                    # Angular Frontend
-│   ├── src/app/
-│   │   ├── components/           # UI components
-│   │   ├── services/             # API services
-│   │   ├── models/               # TypeScript interfaces
-│   │   └── ...
-│   └── e2e/                      # Playwright tests
-├── insurance-quote-backend/       # Spring Boot Backend
-│   ├── src/main/java/
-│   │   ├── entity/               # JPA entities
-│   │   ├── repository/           # Data repositories
-│   │   ├── service/              # Business logic
-│   │   ├── controller/           # REST controllers
-│   │   └── ...
-│   └── src/test/java/            # JUnit tests
-├── logs/                         # Application logs
-├── start-full-application.sh     # Startup script
-└── stop-application.sh           # Shutdown script
-```
-
-### Adding New Features
-
-1. **Backend**: Add entities, repositories, services, controllers
-2. **Frontend**: Add components, services, models
-3. **Tests**: Add unit tests and E2E tests
-4. **Documentation**: Update API docs and README
-
-### Code Quality
-- **Backend**: Uses Spring Boot best practices, proper validation, exception handling
-- **Frontend**: Uses Angular signals, reactive forms, proper error handling
-- **Testing**: Comprehensive test coverage with both positive and negative scenarios
-
 ## 🚨 Troubleshooting
 
 ### Common Issues
@@ -283,7 +219,7 @@ java -version
 mvn -version
 
 # View backend logs
-cat logs/backend.log
+cat insurance-quote-backend/logs/logs/insurance-quote-backend.log.log
 ```
 
 #### Frontend Won't Start
@@ -296,13 +232,12 @@ rm -rf node_modules package-lock.json
 npm install
 
 # View frontend logs
-cat logs/frontend.log
+cat frontend.log
 ```
 
-#### Database Issues
-- H2 console: http://localhost:8080/api/h2-console
-- Check connection settings in `application.yml`
-- Restart application to reset in-memory database
+## 📄 Documentation
+
+For detailed project insights, challenges encountered, and lessons learned, see [PROJECT_LEARNINGS.md](PROJECT_LEARNINGS.md).
 
 ## 📄 License
 
@@ -318,7 +253,7 @@ This project is licensed under the MIT License.
 ## 📞 Support
 
 For issues and questions:
-1. Check the logs in the `logs/` directory
-2. Verify all services are running
-3. Check the troubleshooting section
-4. Review the test files for examples
+1. Check the troubleshooting section above
+2. Review the PROJECT_LEARNINGS.md for common issues and solutions
+3. Verify all services are running
+4. Check the test files for examples
