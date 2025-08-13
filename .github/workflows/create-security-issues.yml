@@ -2,12 +2,6 @@ name: Create Security Issues
 
 on:
   workflow_dispatch:
-    inputs:
-      create_all:
-        description: 'Create all security issues'
-        required: true
-        default: 'true'
-        type: boolean
 
 jobs:
   create-security-issues:
@@ -24,53 +18,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🚨 CRITICAL: Cross-Site Scripting (XSS) Vulnerabilities',
-              body: `## Priority: CRITICAL 🚨
-
-            ### Vulnerability Description
-            Multiple XSS vulnerabilities exist due to direct binding of user input without proper sanitization in form fields.
-
-            ### Affected Files
-            - \`/src/app/purchase-order/purchase-order.html\` (lines 489, 492, 495, 498, 501, etc.)
-
-            ### Risk Assessment
-            - **Severity**: Critical
-            - **Impact**: Session hijacking, data theft, credential harvesting, malicious redirects
-
-            ### Vulnerable Code Examples
-            \`\`\`html
-            <input type="text" formControlName="description" (blur)="onItemChange(i)" class="w-32 h-6 px-1 border border-gray-300 rounded text-xs">
-            <input type="text" formControlName="supplierItem" class="w-24 h-6 px-1 border border-gray-300 rounded text-xs">
-            \`\`\`
-
-            ### Exploitation Scenario
-            1. Attacker enters \`<script>alert('XSS')</script>\` or \`<img src=x onerror=alert('XSS')>\` in any text field
-            2. When data is displayed elsewhere, the script executes
-            3. Attacker can steal session cookies or perform unauthorized actions
-
-            ### Remediation Required
-            \`\`\`typescript
-            // Implement proper input sanitization
-            import { DomSanitizer } from '@angular/platform-browser';
-
-            constructor(private sanitizer: DomSanitizer) {}
-
-            sanitizeInput(input: string): string {
-              return this.sanitizer.sanitize(SecurityContext.HTML, input) || '';
-            }
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] All user inputs properly sanitized
-            - [ ] XSS protection implemented for form fields
-            - [ ] Security tests added to prevent regression
-            - [ ] Code review completed
-
-            ### Related Issues
-            Part of comprehensive security audit findings.`,
+              body: '## Priority: CRITICAL 🚨\n\n### Vulnerability Description\nMultiple XSS vulnerabilities exist due to direct binding of user input without proper sanitization in form fields.\n\n### Affected Files\n- `/src/app/purchase-order/purchase-order.html` (lines 489, 492, 495, 498, 501, etc.)\n\n### Risk Assessment\n- **Severity**: Critical\n- **Impact**: Session hijacking, data theft, credential harvesting, malicious redirects\n\n### Remediation Required\n- Implement proper input sanitization\n- Add XSS protection for all form fields\n- Security tests and code review',
               labels: ['security', 'critical', 'bug']
             })
 
@@ -78,48 +30,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🔍 HIGH: Information Disclosure through Console Logging',
-              body: `## Priority: HIGH 🔍
-
-            ### Vulnerability Description
-            Sensitive form data is being logged to the browser console, exposing confidential business information.
-
-            ### Affected Files
-            - \`/src/app/purchase-order/purchase-order.ts\` (lines 184-204)
-
-            ### Risk Assessment
-            - **Severity**: High
-            - **Impact**: Sensitive business data exposed, compliance violations (GDPR, PCI-DSS)
-
-            ### Vulnerable Code Examples
-            \`\`\`typescript
-            console.log('Purchase Order Data:', this.purchaseOrderForm.value);
-            console.log('Form errors:', this.purchaseOrderForm.errors);
-            \`\`\`
-
-            ### Impact
-            - Purchase order details, supplier information, financial data visible in developer tools
-            - Anyone with access to the browser can view sensitive information
-            - Potential compliance violations
-
-            ### Remediation Required
-            \`\`\`typescript
-            // Remove all console.log statements from production code
-            // Use proper logging service instead
-            if (!environment.production) {
-              // Only log in development
-              console.log('Form submitted');
-            }
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Remove all sensitive data from console logs
-            - [ ] Implement proper logging service
-            - [ ] Add environment-based logging controls
-            - [ ] Security review completed`,
+              body: '## Priority: HIGH 🔍\n\n### Vulnerability Description\nSensitive form data is being logged to the browser console, exposing confidential business information.\n\n### Affected Files\n- `/src/app/purchase-order/purchase-order.ts` (lines 184-204)\n\n### Risk Assessment\n- **Severity**: High\n- **Impact**: Sensitive business data exposed, compliance violations\n\n### Remediation Required\n- Remove all console.log statements from production code\n- Implement proper logging service\n- Add environment-based logging controls',
               labels: ['security', 'high', 'bug']
             })
 
@@ -127,48 +42,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '⚠️ HIGH: Missing Input Validation and Business Logic Controls',
-              body: `## Priority: HIGH ⚠️
-
-            ### Vulnerability Description
-            Insufficient client-side validation and missing business logic constraints allow users to enter extreme or invalid values.
-
-            ### Affected Files
-            - \`/src/app/purchase-order/purchase-order.ts\` (various lines)
-
-            ### Risk Assessment
-            - **Severity**: High
-            - **Impact**: Business logic bypass, financial manipulation, data integrity issues
-
-            ### Vulnerable Code Examples
-            \`\`\`typescript
-            quantity: [1, [Validators.required, Validators.min(1)]], // No maximum limit
-            unitPrice: [0, [Validators.required, Validators.min(0)]], // No maximum limit
-            discount: [0, [Validators.min(0), Validators.max(100)]], // Could allow negative discounts
-            \`\`\`
-
-            ### Impact
-            - Users can enter extreme values (quantity: 999999999, unitPrice: $999999999)
-            - No server-side validation
-            - Business logic can be bypassed
-
-            ### Remediation Required
-            \`\`\`typescript
-            // Add proper validation constraints
-            quantity: [1, [Validators.required, Validators.min(1), Validators.max(10000)]],
-            unitPrice: [0, [Validators.required, Validators.min(0.01), Validators.max(1000000)]],
-            // Add custom validators for business rules
-            discount: [0, [Validators.min(0), Validators.max(100), this.validateBusinessDiscount]]
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Add maximum value constraints for all numeric fields
-            - [ ] Implement custom business logic validators
-            - [ ] Add server-side validation
-            - [ ] Add comprehensive input testing`,
+              body: '## Priority: HIGH ⚠️\n\n### Vulnerability Description\nInsufficient client-side validation and missing business logic constraints allow users to enter extreme or invalid values.\n\n### Affected Files\n- `/src/app/purchase-order/purchase-order.ts` (various lines)\n\n### Risk Assessment\n- **Severity**: High\n- **Impact**: Business logic bypass, financial manipulation, data integrity issues\n\n### Remediation Required\n- Add maximum value constraints for all numeric fields\n- Implement custom business logic validators\n- Add server-side validation',
               labels: ['security', 'high', 'bug']
             })
 
@@ -176,52 +54,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🔐 HIGH: Missing Authentication and Authorization',
-              body: `## Priority: HIGH 🔐
-
-            ### Vulnerability Description
-            No authentication or authorization mechanisms are implemented, allowing unrestricted access to the application.
-
-            ### Affected Files
-            - All application files (no auth guards present)
-
-            ### Risk Assessment
-            - **Severity**: High
-            - **Impact**: Unauthorized access, data breaches, financial fraud
-
-            ### Current Issues
-            - Anyone can access and submit purchase orders
-            - No user identity verification
-            - No role-based access control
-            - Unauthorized access to sensitive business functions
-
-            ### Remediation Required
-            \`\`\`typescript
-            // Implement authentication guard
-            @Injectable()
-            export class AuthGuard implements CanActivate {
-              canActivate(): boolean {
-                return this.authService.isAuthenticated();
-              }
-            }
-
-            // Add to routes
-            {
-              path: 'purchase-order',
-              loadComponent: () => import('./purchase-order/purchase-order'),
-              canActivate: [AuthGuard]
-            }
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Implement user authentication system
-            - [ ] Add authorization guards to routes
-            - [ ] Create role-based access control
-            - [ ] Add session management
-            - [ ] Implement proper logout functionality`,
+              body: '## Priority: HIGH 🔐\n\n### Vulnerability Description\nNo authentication or authorization mechanisms are implemented, allowing unrestricted access to the application.\n\n### Risk Assessment\n- **Severity**: High\n- **Impact**: Unauthorized access, data breaches, financial fraud\n\n### Remediation Required\n- Implement user authentication system\n- Add authorization guards to routes\n- Create role-based access control',
               labels: ['security', 'high', 'enhancement']
             })
 
@@ -229,50 +66,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🛡️ HIGH: Missing CSRF Protection',
-              body: `## Priority: HIGH 🛡️
-
-            ### Vulnerability Description
-            No CSRF (Cross-Site Request Forgery) protection is implemented, making the application vulnerable to unauthorized actions.
-
-            ### Affected Files
-            - \`/src/app/purchase-order/purchase-order.html\` (form submissions)
-            - \`/src/app/app.config.ts\` (missing CSRF configuration)
-
-            ### Risk Assessment
-            - **Severity**: High
-            - **Impact**: Malicious sites can submit purchase orders on behalf of authenticated users
-
-            ### Current Issues
-            - No CSRF tokens in forms
-            - Missing CSRF configuration in HTTP client
-            - Vulnerable to cross-site request forgery attacks
-
-            ### Remediation Required
-            \`\`\`typescript
-            // Enable CSRF protection in app.config.ts
-            import { provideHttpClient, withXsrfConfiguration } from '@angular/common/http';
-
-            export const appConfig: ApplicationConfig = {
-              providers: [
-                provideHttpClient(
-                  withXsrfConfiguration({
-                    cookieName: 'XSRF-TOKEN',
-                    headerName: 'X-XSRF-TOKEN'
-                  })
-                )
-              ]
-            };
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Configure CSRF protection in HTTP client
-            - [ ] Implement CSRF token validation
-            - [ ] Add CSRF tokens to all forms
-            - [ ] Test CSRF protection functionality`,
+              body: '## Priority: HIGH 🛡️\n\n### Vulnerability Description\nNo CSRF (Cross-Site Request Forgery) protection is implemented, making the application vulnerable to unauthorized actions.\n\n### Risk Assessment\n- **Severity**: High\n- **Impact**: Malicious sites can submit purchase orders on behalf of authenticated users\n\n### Remediation Required\n- Configure CSRF protection in HTTP client\n- Implement CSRF token validation\n- Add CSRF tokens to all forms',
               labels: ['security', 'high', 'bug']
             })
 
@@ -280,58 +78,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🌐 HIGH: Insecure Server Configuration',
-              body: `## Priority: HIGH 🌐
-
-            ### Vulnerability Description
-            The Express server lacks essential security configurations including security headers, rate limiting, and proper error handling.
-
-            ### Affected Files
-            - \`/src/server.ts\` (lines 30-36, 56)
-
-            ### Risk Assessment
-            - **Severity**: High
-            - **Impact**: Clickjacking attacks, MIME type sniffing, XSS attacks, DDoS vulnerabilities
-
-            ### Current Issues
-            - No security headers configured
-            - Missing rate limiting
-            - No input sanitization on server side
-            - Error handling exposes internal details
-
-            ### Remediation Required
-            \`\`\`typescript
-            import helmet from 'helmet';
-            import rateLimit from 'express-rate-limit';
-
-            // Add security middleware
-            app.use(helmet({
-              contentSecurityPolicy: {
-                directives: {
-                  defaultSrc: ["'self'"],
-                  scriptSrc: ["'self'", "'unsafe-inline'"],
-                  styleSrc: ["'self'", "'unsafe-inline'"]
-                }
-              }
-            }));
-
-            // Add rate limiting
-            const limiter = rateLimit({
-              windowMs: 15 * 60 * 1000, // 15 minutes
-              max: 100 // limit each IP to 100 requests per windowMs
-            });
-            app.use(limiter);
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Install and configure helmet for security headers
-            - [ ] Implement rate limiting
-            - [ ] Add input sanitization middleware
-            - [ ] Improve error handling without exposing internals
-            - [ ] Add Content Security Policy`,
+              body: '## Priority: HIGH 🌐\n\n### Vulnerability Description\nThe Express server lacks essential security configurations including security headers, rate limiting, and proper error handling.\n\n### Risk Assessment\n- **Severity**: High\n- **Impact**: Clickjacking attacks, MIME type sniffing, XSS attacks, DDoS vulnerabilities\n\n### Remediation Required\n- Install and configure helmet for security headers\n- Implement rate limiting\n- Add input sanitization middleware',
               labels: ['security', 'high', 'enhancement']
             })
 
@@ -339,43 +90,11 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '🐳 MEDIUM: Container Security Concerns',
-              body: `## Priority: MEDIUM 🐳
-
-            ### Vulnerability Description
-            The Docker container configuration has security issues including running as root user and missing health checks.
-
-            ### Affected Files
-            - \`/Dockerfile\` (lines 19, 21)
-
-            ### Risk Assessment
-            - **Severity**: Medium
-            - **Impact**: Container escape, privilege escalation, service availability issues
-
-            ### Current Issues
-            - Running as root user
-            - No health checks configured
-            - Missing security best practices
-
-            ### Remediation Required
-            \`\`\`dockerfile
-            # Add non-root user
-            RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
-            USER nextjs
-
-            # Add health check
-            HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\
-              CMD curl -f http://localhost:4000/health || exit 1
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Create non-root user for container
-            - [ ] Add health check endpoint
-            - [ ] Implement security scanning in CI/CD
-            - [ ] Review and harden container configuration`,
+              body: '## Priority: MEDIUM 🐳\n\n### Vulnerability Description\nThe Docker container configuration has security issues including running as root user and missing health checks.\n\n### Risk Assessment\n- **Severity**: Medium\n- **Impact**: Container escape, privilege escalation, service availability issues\n\n### Remediation Required\n- Create non-root user for container\n- Add health check endpoint\n- Implement security scanning in CI/CD',
               labels: ['security', 'medium', 'docker']
             })
 
@@ -383,55 +102,14 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            github.rest.issues.create({
+            await github.rest.issues.create({
               owner: context.repo.owner,
               repo: context.repo.repo,
               title: '📦 MEDIUM: Dependency Vulnerabilities',
-              body: `## Priority: MEDIUM 📦
-
-            ### Vulnerability Description
-            npm audit has identified vulnerable packages in the project dependencies.
-
-            ### Affected Files
-            - \`package.json\` and \`package-lock.json\`
-
-            ### Risk Assessment
-            - **Severity**: Medium
-            - **Impact**: Potential security vulnerabilities through third-party packages
-
-            ### Current Issues
-            - \`tmp\` package vulnerability (arbitrary file write via symbolic link)
-            - 3 low severity vulnerabilities in development dependencies
-
-            ### Remediation Required
-            \`\`\`bash
-            # Run npm audit and fix vulnerabilities
-            npm audit fix
-
-            # Update vulnerable packages
-            npm update
-
-            # Review and update dependencies regularly
-            \`\`\`
-
-            ### Acceptance Criteria
-            - [ ] Run npm audit fix to resolve known vulnerabilities
-            - [ ] Update vulnerable packages to secure versions
-            - [ ] Implement automated dependency scanning in CI/CD
-            - [ ] Establish regular dependency update schedule
-            - [ ] Add security policy for dependency management`,
+              body: '## Priority: MEDIUM 📦\n\n### Vulnerability Description\nnpm audit has identified vulnerable packages in the project dependencies.\n\n### Risk Assessment\n- **Severity**: Medium\n- **Impact**: Potential security vulnerabilities through third-party packages\n\n### Remediation Required\n- Run npm audit fix to resolve known vulnerabilities\n- Update vulnerable packages to secure versions\n- Implement automated dependency scanning in CI/CD',
               labels: ['security', 'medium', 'dependencies']
             })
 
       - name: Summary
         run: |
           echo "✅ Created 8 security issues successfully!"
-          echo "🔍 Issues created:"
-          echo "  • Critical XSS Vulnerabilities"
-          echo "  • Information Disclosure via Console"
-          echo "  • Missing Input Validation"
-          echo "  • Missing Authentication/Authorization"
-          echo "  • Missing CSRF Protection"
-          echo "  • Insecure Server Configuration"
-          echo "  • Container Security Concerns"
-          echo "  • Dependency Vulnerabilities"
